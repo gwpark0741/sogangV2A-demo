@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V2A Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Cabinet+Grotesk:wght@700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0d;
+      --surface: #141414;
+      --border: #242424;
+      --highlight: #e8ff47;
+      --muted: #555;
+      --text: #efefef;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      min-height: 100vh;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      height: 52px;
+    }
+
+    .nav-logo {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo span { background: var(--highlight); color: #000; padding: 0 4px; }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-links a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); }
+
+    .hero {
+      padding: 80px 40px 60px;
+      max-width: 960px;
+      margin: 0 auto;
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 em { font-style: normal; background: var(--highlight); color: #000; padding: 0 6px; }
+
+    .hero-meta { display: flex; gap: 32px; font-size: 12px; color: var(--muted); }
+    .hero-meta span::before { content: '// '; }
+
+    .demos {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 40px 100px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      margin-bottom: 40px;
+    }
+
+    .demo-card {
+      margin-bottom: 64px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.6s ease forwards;
+    }
+
+    .demo-card:nth-child(1) { animation-delay: 0.1s; }
+    .demo-card:nth-child(2) { animation-delay: 0.25s; }
+
+    .demo-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .demo-index {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--muted);
+      min-width: 28px;
+    }
+
+    .demo-title {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .video-wrap {
+      position: relative;
+    }
+
+    /* accent line */
+    .video-wrap::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 48px; height: 2px;
+      background: var(--highlight);
+      z-index: 1;
+    }
+
+    video {
+      width: 100%;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: #000;
+      display: block;
+      outline: none;
+    }
+
+    .demo-desc {
+      margin-top: 12px;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    .demo-desc::before { content: '// '; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0 0 64px; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    footer a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--border); }
+
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 640px) {
+      nav, .hero, .demos { padding-left: 20px; padding-right: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo">V2A <span>Demo</span></div>
+    <ul class="nav-links">
+      <li><a href="index.html">Results</a></li>
+      <li><a href="demo.html" class="active">Demo</a></li>
+    </ul>
+  </nav>
+
+  <div class="hero">
+    <p class="hero-eyebrow">Video-to-Audio Pipeline</p>
+    <h1>System<br /><em>Demo</em><br />Videos</h1>
+    <div class="hero-meta">
+      <span>파이프라인 시연 화면 녹화</span>
+    </div>
+  </div>
+
+  <section class="demos">
+    <p class="section-label">Demo recordings — 01 through 02</p>
+
+    <!-- ===== DEMO 01 ===== -->
+    <div class="demo-card">
+      <div class="demo-header">
+        <span class="demo-index">01</span>
+        <span class="demo-title">Demo Title Here</span>
+      </div>
+      <div class="video-wrap">
+        <!--
+          시연 영상 경로로 교체
+          예) src="assets/demo_01.mp4"
+        -->
+        <video controls preload="metadata" src="assets/demo_01.mp4"></video>
+      </div>
+      <p class="demo-desc">설명을 여기에 입력하세요</p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ===== DEMO 02 ===== -->
+    <div class="demo-card">
+      <div class="demo-header">
+        <span class="demo-index">02</span>
+        <span class="demo-title">Demo Title Here</span>
+      </div>
+      <div class="video-wrap">
+        <video controls preload="metadata" src="assets/demo_02.mp4"></video>
+      </div>
+      <p class="demo-desc">설명을 여기에 입력하세요</p>
+    </div>
+
+  </section>
+
+  <footer>
+    <span>V2A Pipeline — Demo</span>
+    <a href="index.html">← Generation Results</a>
+  </footer>
+
+</body>
+</html>
