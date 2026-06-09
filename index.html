@@ -758,7 +758,7 @@
 
       const timeline = el('div', 'track-timeline');
       const lane = el('div', 'event-lane');
-      eventsForTrack(sample, track.id).forEach((event) => {
+      eventsForTrack(sample, track.id).forEach((event, index) => {
         const segment = el('div', `event-segment ${track.type || 'unknown'}`);
         const left = event.start / sample.frameCount * 100;
         const width = Math.max(0.8, (event.end - event.start) / sample.frameCount * 100);
