@@ -272,6 +272,7 @@
     }
 
     .mode-button,
+    .row-play-button,
     .track-button,
     .solo-button {
       appearance: none;
@@ -297,15 +298,22 @@
 
     .timeline-ruler {
       position: relative;
+      display: grid;
+      grid-template-columns: 46px 238px minmax(260px, 1fr);
       height: 32px;
-      padding: 0 14px;
+      padding: 0;
       background: #f8f6f0;
       border-bottom: 1px solid var(--border);
     }
 
     .ruler-track {
       position: relative;
+      grid-column: 3;
       height: 100%;
+      min-width: 0;
+      margin: 0 14px;
+      cursor: pointer;
+      touch-action: none;
     }
 
     .ruler-line {
@@ -357,7 +365,7 @@
 
     .track-row {
       display: grid;
-      grid-template-columns: 238px minmax(260px, 1fr);
+      grid-template-columns: 46px 238px minmax(260px, 1fr);
       gap: 0;
       min-height: 74px;
       border-bottom: 1px solid #eee8dd;
@@ -365,6 +373,32 @@
 
     .track-row:last-child { border-bottom: none; }
     .track-row.is-muted { opacity: 0.48; }
+    .track-row.is-previewing { background: #fffdf1; }
+
+    .row-play-cell {
+      display: grid;
+      place-items: center;
+      border-right: 1px solid #eee8dd;
+      padding: 12px 8px;
+    }
+
+    .row-play-button {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: #fff;
+      color: var(--text);
+      font-size: 10px;
+      line-height: 1;
+      display: inline-grid;
+      place-items: center;
+    }
+
+    .row-play-button.is-active {
+      background: var(--highlight);
+      border-color: #a7ad28;
+    }
 
     .track-meta {
       padding: 12px 14px;
@@ -431,7 +465,8 @@
       overflow-wrap: anywhere;
     }
 
-    .track-source {
+    .track-source,
+    .track-model {
       color: var(--muted);
       font-size: 10px;
       line-height: 1.35;
@@ -450,7 +485,8 @@
       border-radius: 3px;
       background: #eee9de;
       overflow: hidden;
-      margin-bottom: 8px;
+      cursor: pointer;
+      touch-action: none;
     }
 
     .event-segment {
@@ -467,54 +503,6 @@
     .event-segment.ambience { background: var(--ambience); }
     .event-segment.music { background: var(--music); }
     .event-segment.dialogue { background: var(--dialogue); }
-
-    .event-audios {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .event-audio {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      min-height: 24px;
-      border: 1px solid #e1dbcf;
-      border-radius: 4px;
-      background: #fbfaf6;
-      padding: 3px 7px 3px 4px;
-    }
-
-    .event-play {
-      appearance: none;
-      border: 1px solid var(--border);
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #fff;
-      color: var(--text);
-      cursor: pointer;
-      font: inherit;
-      font-size: 9px;
-      line-height: 1;
-      display: inline-grid;
-      place-items: center;
-    }
-
-    .event-play.is-active {
-      background: var(--highlight);
-      border-color: #a7ad28;
-    }
-
-    .event-model {
-      color: var(--muted);
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
 
     .track-playhead {
       position: absolute;
@@ -559,10 +547,13 @@
       .hero { padding-top: 52px; }
       .video-row, .sample-header, .mix-header { grid-template-columns: 1fr; }
       .sample-stats { white-space: normal; }
-      .track-row { grid-template-columns: 1fr; }
+      .timeline-ruler { grid-template-columns: 1fr; }
+      .ruler-track { grid-column: 1; }
+      .track-row { grid-template-columns: 42px 1fr; }
+      .track-timeline { grid-column: 1 / -1; }
+      .row-play-cell { border-bottom: 1px solid #eee8dd; }
       .track-meta { border-right: none; border-bottom: 1px solid #eee8dd; }
       .track-timeline { padding-top: 10px; }
-      .event-audios { align-items: flex-start; }
       footer { flex-direction: column; align-items: flex-start; }
     }
   </style>
@@ -739,6 +730,15 @@
       row.dataset.trackId = track.id;
       row.dataset.trackType = track.type || 'unknown';
 
+      const playCell = el('div', 'row-play-cell');
+      const playButton = el('button', 'row-play-button', '▶');
+      playButton.type = 'button';
+      playButton.dataset.action = 'play-row';
+      playButton.dataset.trackId = track.id;
+      playButton.title = `Play row audio: ${track.label || 'Untitled track'}`;
+      playCell.append(playButton);
+      row.append(playCell);
+
       const meta = el('div', 'track-meta');
       const top = el('div', 'track-top');
       top.append(el('span', `track-type ${track.type || 'unknown'}`, CATEGORY_LABELS[track.type] || 'Other'));
@@ -754,6 +754,7 @@
       meta.append(top);
       meta.append(el('div', 'track-label', track.label || 'Untitled track'));
       meta.append(el('div', 'track-source', `source: ${sourceLabel(sample, track.source)}`));
+      meta.append(el('div', 'track-model', `model: ${modelLabel(track.mode)}`));
       row.append(meta);
 
       const timeline = el('div', 'track-timeline');
@@ -767,22 +768,8 @@
         segment.title = `Audio ${index + 1}`;
         lane.append(segment);
       });
+      lane.append(el('div', 'track-playhead'));
       timeline.append(lane);
-
-      const eventAudios = el('div', 'event-audios');
-      eventsForTrack(sample, track.id).forEach((event, index) => {
-        const item = el('div', 'event-audio');
-        const button = el('button', 'event-play', '▶');
-        button.type = 'button';
-        button.dataset.action = 'play-event';
-        button.dataset.eventId = event.id;
-        button.title = `Play audio ${index + 1}`;
-        item.append(button);
-        item.append(el('span', 'event-model', modelLabel(track.mode)));
-        eventAudios.append(item);
-      });
-      timeline.append(eventAudios);
-      timeline.append(el('div', 'track-playhead'));
       row.append(timeline);
       return row;
     }
@@ -799,11 +786,14 @@
         this.audioContext = null;
         this.bufferPromises = new Map();
         this.sources = [];
-        this.previewSource = null;
+        this.previewTrackId = null;
         this.previewButton = null;
         this.scheduleToken = 0;
         this.rafId = null;
         this.isLoading = false;
+        this.isStartingPreview = false;
+        this.ignoreNextPause = false;
+        this.isScrubbing = false;
 
         this.bind();
         this.syncModeButtons();
@@ -846,26 +836,98 @@
           });
         });
 
-        $$('[data-action="play-event"]', this.panel).forEach((button) => {
+        $$('[data-action="play-row"]', this.panel).forEach((button) => {
           button.addEventListener('click', () => {
-            const event = this.sample.events.find((item) => item.id === button.dataset.eventId);
-            if (event) this.playEventPreview(event, button);
+            this.playRowPreview(button.dataset.trackId, button);
           });
         });
+
+        this.bindTimelineSeeking();
 
         ['play', 'seeked', 'ratechange'].forEach((eventName) => {
           this.video.addEventListener(eventName, () => {
             this.updatePlayhead();
-            if (this.mode === 'solo') this.reschedule();
+            if (this.isStartingPreview || this.isScrubbing) return;
+            if (this.previewTrackId) {
+              this.scheduleRowPreview();
+            } else if (this.mode === 'solo') {
+              this.reschedule();
+            }
           });
         });
 
         ['pause', 'ended', 'emptied'].forEach((eventName) => {
-          this.video.addEventListener(eventName, () => this.stopSources());
+          this.video.addEventListener(eventName, () => {
+            if (eventName === 'pause' && this.ignoreNextPause) {
+              this.ignoreNextPause = false;
+              return;
+            }
+            if (this.isStartingPreview) return;
+            if (this.previewTrackId) {
+              this.stopRowPreview({ pauseVideo: false });
+            } else {
+              this.stopSources();
+            }
+          });
         });
 
         this.video.addEventListener('loadedmetadata', () => this.updatePlayhead());
         this.video.addEventListener('timeupdate', () => this.updatePlayhead());
+      }
+
+      bindTimelineSeeking() {
+        $$('.ruler-track, .event-lane', this.panel).forEach((target) => {
+          target.addEventListener('pointerdown', (event) => this.beginTimelineSeek(event, target));
+        });
+      }
+
+      beginTimelineSeek(event, target) {
+        if (event.button !== undefined && event.button !== 0) return;
+        event.preventDefault();
+        this.isScrubbing = true;
+        this.stopSources();
+        if (target.setPointerCapture && event.pointerId !== undefined) {
+          target.setPointerCapture(event.pointerId);
+        }
+
+        const move = (moveEvent) => this.seekFromPointer(moveEvent, target);
+        const finish = (finishEvent) => {
+          this.seekFromPointer(finishEvent, target);
+          cleanup();
+          this.finishTimelineSeek();
+        };
+        const cancel = () => {
+          cleanup();
+          this.finishTimelineSeek();
+        };
+        const cleanup = () => {
+          target.removeEventListener('pointermove', move);
+          target.removeEventListener('pointerup', finish);
+          target.removeEventListener('pointercancel', cancel);
+        };
+
+        this.seekFromPointer(event, target);
+        target.addEventListener('pointermove', move);
+        target.addEventListener('pointerup', finish, { once: true });
+        target.addEventListener('pointercancel', cancel, { once: true });
+      }
+
+      seekFromPointer(event, target) {
+        const rect = target.getBoundingClientRect();
+        if (!rect.width) return;
+        const percent = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+        const duration = this.video.duration || this.sample.frameCount / 30;
+        this.video.currentTime = percent * duration;
+        this.updatePlayhead();
+      }
+
+      finishTimelineSeek() {
+        this.isScrubbing = false;
+        if (this.previewTrackId && !this.video.paused && !this.video.ended) {
+          this.scheduleRowPreview();
+        } else if (this.mode === 'solo' && !this.video.paused && !this.video.ended) {
+          this.reschedule();
+        }
       }
 
       ensureSoloMode() {
@@ -873,6 +935,7 @@
       }
 
       setMode(mode) {
+        if (this.previewTrackId) this.stopRowPreview({ pauseVideo: false, restoreMuted: false, updateStatus: false });
         this.mode = mode;
         this.video.muted = mode === 'solo';
         this.syncModeButtons();
@@ -895,12 +958,17 @@
         this.sample.tracks.forEach((track) => {
           const row = $(`[data-track-id="${track.id}"]`, this.panel);
           const enabled = this.enabledTracks.has(track.id);
-          row.classList.toggle('is-muted', !enabled);
+          const previewing = this.previewTrackId === track.id;
+          row.classList.toggle('is-muted', !enabled && !previewing);
+          row.classList.toggle('is-previewing', previewing);
           const power = $('[data-action="toggle-track"]', row);
           const solo = $('[data-action="solo-track"]', row);
+          const play = $('[data-action="play-row"]', row);
           power.textContent = enabled ? 'ON' : 'OFF';
           power.classList.toggle('is-off', !enabled);
           solo.classList.toggle('is-active', this.soloTrack === track.id);
+          play.textContent = previewing ? '■' : '▶';
+          play.classList.toggle('is-active', previewing);
         });
       }
 
@@ -944,38 +1012,136 @@
         return promise;
       }
 
-      async playEventPreview(event, button) {
-        if (this.previewButton === button && button.classList.contains('is-active')) {
-          this.stopPreview();
+      ensureVideoReady() {
+        if (this.video.readyState >= 1) return Promise.resolve();
+        return new Promise((resolve, reject) => {
+          const cleanup = () => {
+            this.video.removeEventListener('loadedmetadata', handleReady);
+            this.video.removeEventListener('error', handleError);
+          };
+          const handleReady = () => {
+            cleanup();
+            resolve();
+          };
+          const handleError = () => {
+            cleanup();
+            reject(new Error('video metadata unavailable'));
+          };
+          this.video.addEventListener('loadedmetadata', handleReady, { once: true });
+          this.video.addEventListener('error', handleError, { once: true });
+        });
+      }
+
+      async loadTrackBuffers(trackId) {
+        const events = eventsForTrack(this.sample, trackId);
+        const results = await Promise.allSettled(events.map((event) => this.loadBuffer(event)
+          .then((buffer) => ({ event, buffer }))));
+        return {
+          playable: results.filter((result) => result.status === 'fulfilled').map((result) => result.value),
+          failed: results.filter((result) => result.status === 'rejected').length,
+          total: events.length,
+        };
+      }
+
+      async playRowPreview(trackId, button) {
+        if (this.previewTrackId === trackId && this.previewButton === button) {
+          this.stopRowPreview();
           return;
         }
 
         if (activePreviewController && activePreviewController !== this) {
-          activePreviewController.stopPreview();
+          activePreviewController.stopRowPreview();
         }
-        this.stopPreview();
-        activePreviewController = this;
-        button.classList.add('is-active');
-        button.textContent = '■';
+        if (this.previewTrackId) this.stopRowPreview();
+
+        this.stopSources();
+        const token = ++this.scheduleToken;
+        this.previewTrackId = trackId;
         this.previewButton = button;
-        this.setStatus('Playing selected event audio');
+        activePreviewController = this;
+        this.video.muted = true;
+        this.syncTrackButtons();
+        this.setStatus('Loading row audio...');
+        this.isStartingPreview = true;
 
         try {
-          const context = await this.getAudioContext();
-          const buffer = await this.loadBuffer(event);
-          if (this.previewButton !== button) return;
-          const source = context.createBufferSource();
-          source.buffer = buffer;
-          source.connect(context.destination);
-          source.onended = () => {
-            if (this.previewSource === source) this.stopPreview();
-          };
-          this.previewSource = source;
-          source.start();
+          await this.getAudioContext();
+          await this.ensureVideoReady();
+          if (!this.video.paused) {
+            this.ignoreNextPause = true;
+            this.video.pause();
+          }
+          const duration = this.video.duration || 0;
+          if (this.video.ended || (duration && this.video.currentTime >= duration - 0.05)) {
+            this.video.currentTime = 0;
+          }
+          const loaded = await this.loadTrackBuffers(trackId);
+          if (token !== this.scheduleToken || this.previewTrackId !== trackId) return;
+          if (!loaded.playable.length) {
+            this.stopRowPreview({ pauseVideo: false });
+            this.setStatus(loaded.total ? `Row preview unavailable - ${loaded.failed} missing audio file(s)` : 'Row preview unavailable - no audio events');
+            return;
+          }
+
+          await this.video.play();
+          if (token !== this.scheduleToken || this.previewTrackId !== trackId) return;
+          this.scheduleLoadedEvents(loaded.playable, token);
+          this.setStatus(loaded.failed ? `Row preview - ${loaded.failed} missing audio file(s)` : 'Row preview');
         } catch (error) {
-          this.stopPreview();
-          this.setStatus(`Missing audio file: ${event.id}`);
+          if (token === this.scheduleToken) {
+            this.stopRowPreview({ pauseVideo: false });
+            this.setStatus('Row preview unavailable');
+          }
+        } finally {
+          this.isStartingPreview = false;
         }
+      }
+
+      async scheduleRowPreview() {
+        if (!this.previewTrackId || this.video.paused || this.video.ended) return;
+        const trackId = this.previewTrackId;
+        const token = ++this.scheduleToken;
+        const loaded = await this.loadTrackBuffers(trackId);
+        if (token !== this.scheduleToken || this.previewTrackId !== trackId || this.video.paused) return;
+        if (!loaded.playable.length) {
+          this.stopRowPreview();
+          this.setStatus(loaded.total ? `Row preview unavailable - ${loaded.failed} missing audio file(s)` : 'Row preview unavailable - no audio events');
+          return;
+        }
+        this.scheduleLoadedEvents(loaded.playable, token);
+        if (loaded.failed) this.setStatus(`Row preview - ${loaded.failed} missing audio file(s)`);
+      }
+
+      scheduleLoadedEvents(playable, token) {
+        if (!this.audioContext || token !== this.scheduleToken || !this.previewTrackId || this.video.paused) return;
+
+        this.stopSources(false);
+        const rate = Math.max(0.05, Math.abs(this.video.playbackRate || 1));
+        const now = this.audioContext.currentTime;
+        const duration = this.video.duration || this.sample.frameCount / 30;
+        const videoTime = this.video.currentTime || 0;
+
+        playable.forEach(({ event, buffer }) => {
+          if (token !== this.scheduleToken || !this.previewTrackId || this.video.paused) return;
+          const start = event.start / this.sample.frameCount * duration;
+          const end = event.end / this.sample.frameCount * duration;
+          if (end <= videoTime || start >= duration) return;
+
+          const offset = Math.max(0, videoTime - start);
+          if (offset >= buffer.duration) return;
+          const wait = Math.max(0, (start - videoTime) / rate);
+          const playFor = Math.max(0.03, (end - Math.max(videoTime, start)) / rate);
+          const source = this.audioContext.createBufferSource();
+          source.buffer = buffer;
+          source.playbackRate.value = rate;
+          source.connect(this.audioContext.destination);
+          source.start(now + wait, Math.min(offset, Math.max(0, buffer.duration - 0.01)));
+          source.stop(now + wait + playFor);
+          source.onended = () => {
+            this.sources = this.sources.filter((item) => item !== source);
+          };
+          this.sources.push(source);
+        });
       }
 
       async reschedule() {
@@ -1027,17 +1193,18 @@
         this.sources = [];
       }
 
-      stopPreview() {
-        if (this.previewSource) {
-          try { this.previewSource.stop(); } catch (error) {}
-        }
-        this.previewSource = null;
-        if (this.previewButton) {
-          this.previewButton.classList.remove('is-active');
-          this.previewButton.textContent = '▶';
-        }
+      stopRowPreview({ pauseVideo = true, restoreMuted = true, updateStatus = true } = {}) {
+        const hadPreview = Boolean(this.previewTrackId);
+        this.previewTrackId = null;
         this.previewButton = null;
         if (activePreviewController === this) activePreviewController = null;
+        this.stopSources();
+        this.syncTrackButtons();
+        if (pauseVideo && !this.video.paused) this.video.pause();
+        if (restoreMuted) this.video.muted = this.mode === 'solo';
+        if (hadPreview && updateStatus) {
+          this.setStatus(this.mode === 'solo' ? 'Track solo mode' : 'Full mix from synthesized video');
+        }
       }
 
       updatePlayhead() {
