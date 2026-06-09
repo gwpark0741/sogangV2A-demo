@@ -122,8 +122,7 @@
       animation: fadeUp 0.6s ease forwards;
     }
 
-    .demo-card:nth-child(1) { animation-delay: 0.1s; }
-    .demo-card:nth-child(2) { animation-delay: 0.25s; }
+    .demo-card { animation-delay: 0.1s; }
 
     .demo-header {
       display: flex;
@@ -212,43 +211,25 @@
 
   <div class="hero">
     <p class="hero-eyebrow">Video-to-Audio Pipeline</p>
-    <h1>System<br /><em>Demo</em><br />Videos</h1>
+    <h1>System<br /><em>Demo</em><br />Video</h1>
     <div class="hero-meta">
       <span>파이프라인 시연 화면 녹화</span>
     </div>
   </div>
 
   <section class="demos">
-    <p class="section-label">Demo recordings — 01 through 02</p>
+    <p class="section-label">Demo recording</p>
 
     <!-- ===== DEMO 01 ===== -->
     <div class="demo-card">
       <div class="demo-header">
         <span class="demo-index">01</span>
-        <span class="demo-title">Demo Title Here</span>
+        <span class="demo-title">V2A Pipeline Demo Recording</span>
       </div>
       <div class="video-wrap">
-        <!--
-          시연 영상 경로로 교체
-          예) src="assets/demo_01.mp4"
-        -->
-        <video controls preload="metadata" src="assets/demo_01.mp4"></video>
+        <video controls playsinline preload="metadata" src="demo_video.mp4"></video>
       </div>
-      <p class="demo-desc">설명을 여기에 입력하세요</p>
-    </div>
-
-    <hr class="divider" />
-
-    <!-- ===== DEMO 02 ===== -->
-    <div class="demo-card">
-      <div class="demo-header">
-        <span class="demo-index">02</span>
-        <span class="demo-title">Demo Title Here</span>
-      </div>
-      <div class="video-wrap">
-        <video controls preload="metadata" src="assets/demo_02.mp4"></video>
-      </div>
-      <p class="demo-desc">설명을 여기에 입력하세요</p>
+      <p class="demo-desc">데모 영상 녹화본</p>
     </div>
 
   </section>
