@@ -1,0 +1,179 @@
+{
+  "video_id": "7d269d69-a04b-49a0-9315-6f68e8462fca",
+  "source_path": "/home/riverfog7/Workspace/v2a_inspect/data/work/7/7.prepared.mp4",
+  "sam3_tracking_path": "/home/riverfog7/Workspace/v2a_inspect/data/work/7/7.sam3.mp4",
+  "frame_count": 216,
+  "initial_scenes": [
+    {
+      "initial_scene_id": "e8fe80dc-77fd-4f55-89a6-9bc371356841",
+      "start_frame_index": 0,
+      "end_frame_index": 176,
+      "keyframes": [
+        {
+          "keyframe_id": "009b0738-2253-49cf-815d-e9a08b1aedb8",
+          "frame_index": 44,
+          "image_path": "/home/riverfog7/Workspace/v2a_inspect/data/work/7/keyframes/initial_scenes/e8fe80dc-77fd-4f55-89a6-9bc371356841/00000044_009b0738-2253-49cf-815d-e9a08b1aedb8.jpg"
+        },
+        {
+          "keyframe_id": "49da3567-9781-4bb0-937f-724bd55146ed",
+          "frame_index": 88,
+          "image_path": "/home/riverfog7/Workspace/v2a_inspect/data/work/7/keyframes/initial_scenes/e8fe80dc-77fd-4f55-89a6-9bc371356841/00000088_49da3567-9781-4bb0-937f-724bd55146ed.jpg"
+        },
+        {
+          "keyframe_id": "6d6c6f04-16b1-454e-b765-2cb7751bda1e",
+          "frame_index": 132,
+          "image_path": "/home/riverfog7/Workspace/v2a_inspect/data/work/7/keyframes/initial_scenes/e8fe80dc-77fd-4f55-89a6-9bc371356841/00000132_6d6c6f04-16b1-454e-b765-2cb7751bda1e.jpg"
+        }
+      ],
+      "initial_analysis": {
+        "analysis_id": "0583a022-08a4-471c-be19-090afe130c44",
+        "rough_description": "A group of dark, multi-winged futuristic aircraft flying through a hazy, overcast sky above a city landscape.",
+        "object_seeds": [
+          {
+            "object_seed_id": "991a9719-5b05-4c72-b272-5193d1cebfcc",
+            "label": "aircraft",
+            "tracking_prompt": "dark futuristic multi-winged jet",
+            "seed_frame_index": 44,
+            "notes": "The primary subject is a sleek, dark aircraft with multiple wing structures, shown clearly in the first keyframe."
+          }
+        ]
+      },
+      "scene_tracks": []
+    },
+    {
+      "initial_scene_id": "e7d4d249-0b67-41b9-b078-ce687b2668aa",
+      "start_frame_index": 176,
+      "end_frame_index": 216,
+      "keyframes": [
+        {
+          "keyframe_id": "093e1b8f-db38-45be-947b-e9c3e87748e7",
+          "frame_index": 196,
+          "image_path": "/home/riverfog7/Workspace/v2a_inspect/data/work/7/keyframes/initial_scenes/e7d4d249-0b67-41b9-b078-ce687b2668aa/00000196_093e1b8f-db38-45be-947b-e9c3e87748e7.jpg"
+        }
+      ],
+      "initial_analysis": {
+        "analysis_id": "65504fc7-e044-41c8-9161-b9e4350153c5",
+        "rough_description": "A chaotic scene filled with intense flames and fire, showing a group of people, possibly warriors with flags, moving through the inferno.",
+        "object_seeds": [
+          {
+            "object_seed_id": "44eaa0d6-c9e4-4fae-bafb-c37e433a7bce",
+            "label": "person",
+            "tracking_prompt": "human silhouette in fire",
+            "seed_frame_index": 196,
+            "notes": "Representing the figures visible amidst the flames."
+          },
+          {
+            "object_seed_id": "7b8d9ee1-ca92-47e5-aa8c-b3467b655ec2",
+            "label": "flag",
+            "tracking_prompt": "red flag in fire",
+            "seed_frame_index": 196,
+            "notes": "A prominent red flag structure visible near the center."
+          }
+        ]
+      },
+      "scene_tracks": []
+    }
+  ],
+  "visual_identity_layer": {
+    "visual_objects": [],
+    "visual_events": []
+  },
+  "sound_timeline": {
+    "sound_sources": [
+      {
+        "sound_source_id": "8400c3fb-019e-4201-bd11-c0378013e6af",
+        "source_type": "scene_global",
+        "label": "Raging Fire and Inferno",
+        "visual_object_id": null,
+        "notes": "Flames, burning figures, and a red flag engulfed in fire"
+      },
+      {
+        "sound_source_id": "cc12b390-24be-4fae-a3e9-591d0551ad51",
+        "source_type": "visual_object",
+        "label": "Futuristic Jet Aircraft",
+        "visual_object_id": null,
+        "notes": "Dark futuristic multi-winged jet flying through the sky"
+      },
+      {
+        "sound_source_id": "74a069d8-06cf-4935-8d0d-113cd749b0cd",
+        "source_type": "non_diegetic",
+        "label": "Non-Diegetic Music Score",
+        "visual_object_id": null,
+        "notes": "Cinematic music playing in the background"
+      }
+    ],
+    "sound_tracks": [
+      {
+        "sound_track_id": "5d83fc18-611c-4cc2-930f-700fa44e3d81",
+        "track_type": "sfx",
+        "label": "Fire Crackle and Roar",
+        "canonical_key": "fire_crackle_roar",
+        "sound_source_id": "8400c3fb-019e-4201-bd11-c0378013e6af",
+        "generation_mode": "vta",
+        "notes": null
+      },
+      {
+        "sound_track_id": "9a759ae4-ce3e-492e-a7e8-77079c5ae888",
+        "track_type": "sfx",
+        "label": "Jet Engine Rumble",
+        "canonical_key": "jet_engine_rumble",
+        "sound_source_id": "cc12b390-24be-4fae-a3e9-591d0551ad51",
+        "generation_mode": "vta",
+        "notes": null
+      },
+      {
+        "sound_track_id": "f649a1fa-1df8-41cc-9584-f4481b7db1ad",
+        "track_type": "sfx",
+        "label": "Jet Pass-by Whoosh",
+        "canonical_key": "jet_passby_whoosh",
+        "sound_source_id": "cc12b390-24be-4fae-a3e9-591d0551ad51",
+        "generation_mode": "vta",
+        "notes": null
+      },
+      {
+        "sound_track_id": "502ecd86-cbe7-4c64-b617-da7f4b56d102",
+        "track_type": "music",
+        "label": "Cinematic Score Music",
+        "canonical_key": "score_music",
+        "sound_source_id": "74a069d8-06cf-4935-8d0d-113cd749b0cd",
+        "generation_mode": "tta",
+        "notes": null
+      }
+    ],
+    "sound_events": [
+      {
+        "sound_event_id": "484fab7d-cd10-476e-afa1-8bbf1d23acd0",
+        "sound_track_id": "9a759ae4-ce3e-492e-a7e8-77079c5ae888",
+        "start_frame_index": 0,
+        "end_frame_index": 176,
+        "description": "Continuous low-frequency engine roar and rumble of the futuristic jet flying through the air",
+        "notes": null
+      },
+      {
+        "sound_event_id": "3d76e9bc-2ad7-4078-b1cb-4133b0bb0a66",
+        "sound_track_id": "5d83fc18-611c-4cc2-930f-700fa44e3d81",
+        "start_frame_index": 176,
+        "end_frame_index": 216,
+        "description": "Intense, roaring crackle of fire and flames devouring the figures and the flag",
+        "notes": null
+      },
+      {
+        "sound_event_id": "bcb61ad9-69bb-424e-80ee-84b183c4a4cf",
+        "sound_track_id": "502ecd86-cbe7-4c64-b617-da7f4b56d102",
+        "start_frame_index": 0,
+        "end_frame_index": 216,
+        "description": "Dramatic, dark epic orchestral score building tension across scenes",
+        "notes": null
+      },
+      {
+        "sound_event_id": "8c095451-1d8f-4555-904b-6fc20fde8633",
+        "sound_track_id": "f649a1fa-1df8-41cc-9584-f4481b7db1ad",
+        "start_frame_index": 0,
+        "end_frame_index": 110,
+        "description": "Swooshing wind and high-speed air pass-by sound as the jet streaks through the clouds",
+        "notes": null
+      }
+    ],
+    "notes": null
+  }
+}
